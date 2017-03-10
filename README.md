@@ -6,7 +6,7 @@ CLT to loads a Climatic Research Unit Timeseries (CRU TS) file into a database t
 * Maven 3.3.x
 
 ## build
-* `mvn clean package`
+* `mvn clean test package`
 
 ## run
 * `java -jar target/yet-another-cru-ts-transformer.jar`
