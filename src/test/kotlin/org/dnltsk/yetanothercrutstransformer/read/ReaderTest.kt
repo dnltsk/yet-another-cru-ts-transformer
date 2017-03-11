@@ -20,7 +20,7 @@ import java.io.FileNotFoundException
 class ReaderTest() {
 
     @Mock
-    lateinit var metadataReader: MetadataReader
+    lateinit var metadataParser: MetadataParser
 
     @Mock
     lateinit var pointReader: PointReader
@@ -30,10 +30,10 @@ class ReaderTest() {
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        `when`(metadataReader.read(any<File>())).thenReturn(MockedModels.mockedMetadata)
+        `when`(metadataParser.parse(any<File>())).thenReturn(MockedModels.mockedMetadata)
         `when`(pointReader.read(any<File>())).thenReturn(MockedModels.mockedPoints)
         reader = Reader(
-                metadataReader = metadataReader,
+                metadataParser = metadataParser,
                 pointReader = pointReader
         )
     }
@@ -57,7 +57,7 @@ class ReaderTest() {
     @Test
     fun read_uses_metadata_and_point_readers_once() {
         reader.read(GoldenTestData.pathToSampleCruTsFilePre())
-        verify(metadataReader, times(1)).read(any())
+        verify(metadataParser, times(1)).parse(any())
         verify(pointReader, times(1)).read(any())
     }
 

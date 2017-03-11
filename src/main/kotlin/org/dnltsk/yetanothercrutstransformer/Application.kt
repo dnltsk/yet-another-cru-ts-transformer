@@ -4,6 +4,7 @@ import com.google.inject.Guice
 import com.google.inject.Inject
 import org.dnltsk.yetanothercrutstransformer.read.Reader
 import org.slf4j.LoggerFactory
+import java.io.FileNotFoundException
 
 open class Application @Inject constructor(
         val reader: Reader
@@ -21,12 +22,11 @@ open class Application @Inject constructor(
     }
 
     fun run(vararg args: String?) {
-        LOG.info("Hello, CRU TS")
+        LOG.info("# Yet Another CRU TS Transformer")
         if (args.isEmpty()){
-            LOG.error("input file not provided!")
-            System.exit(0)
+            throw FileNotFoundException("input file not provided!")
         }
-        reader.read(args.get(0))
+        reader.read(filename = args.get(0))
     }
 
 
