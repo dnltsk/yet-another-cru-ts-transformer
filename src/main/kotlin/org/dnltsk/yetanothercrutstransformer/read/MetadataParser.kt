@@ -5,11 +5,10 @@ import org.dnltsk.yetanothercrutstransformer.model.BBox
 import org.dnltsk.yetanothercrutstransformer.model.Metadata
 import org.dnltsk.yetanothercrutstransformer.model.Size
 import org.slf4j.LoggerFactory
-import java.io.File
 import java.util.regex.Pattern
 
 @Singleton
-class MetadataParser() {
+class MetadataParser {
 
     private val LOG = LoggerFactory.getLogger(this::class.java)
 
@@ -19,10 +18,8 @@ class MetadataParser() {
     private val VERSION_LINE_INDEX = 2
     private val BBOX_AND_SIZE_LINE_INDEX = 3
 
-    fun parse(file: File): Metadata {
-        val lines = file.readText().lines()
+    fun parse(lines: List<String>): Metadata {
         return Metadata(
-                filename = file.name,
                 cruTsVersion = parseVersion(lines.get(VERSION_LINE_INDEX)),
                 weatherParameterName = parseWeatherParameterName(lines.get(WEATHER_PARAMETER_NAME_LINE_INDEX)),
                 bbox = parseBbox(lines.get(BBOX_AND_SIZE_LINE_INDEX)),

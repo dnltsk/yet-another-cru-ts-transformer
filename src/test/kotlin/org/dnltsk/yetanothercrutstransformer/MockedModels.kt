@@ -7,7 +7,6 @@ class MockedModels {
     companion object {
 
         val mockedMetadata = Metadata(
-                filename = "foo",
                 cruTsVersion = "foo",
                 weatherParameterName = "foo",
                 bbox = BBox(0f, 0f, 0f, 0f),
@@ -17,6 +16,7 @@ class MockedModels {
         val mockedPoints = mutableListOf<Point>()
 
         val mockedCruTs = CruTs(
+                sourceFile = "/foo/bar.txt",
                 metadata = mockedMetadata,
                 points = mockedPoints
         )

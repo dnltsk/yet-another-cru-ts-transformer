@@ -9,14 +9,18 @@ import java.io.FileNotFoundException
 @Singleton
 class Reader @Inject constructor(
         val metadataParser: MetadataParser,
-        val pointReader: PointReader
+        val pointParser: PointParser
 ) {
 
     fun read(filename: String?): CruTs {
         val file = openFile(filename)
-        val metadata = metadataParser.parse(file)
-        val points = pointReader.read(file)
-        return CruTs(metadata = metadata, points = points)
+        val lines = file.readText().lines()
+        val metadata = metadataParser.parse(lines)
+        val points = pointParser.read(lines)
+        return CruTs(
+                sourceFile = file.absoluteFile.absolutePath,
+                metadata = metadata,
+                points = points)
     }
 
     private fun openFile(filename: String?): File {
