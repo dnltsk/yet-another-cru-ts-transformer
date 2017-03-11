@@ -17,13 +17,15 @@ class MetadataParser {
     private val WEATHER_PARAMETER_NAME_LINE_INDEX = 1
     private val VERSION_LINE_INDEX = 2
     private val BBOX_AND_SIZE_LINE_INDEX = 3
+    private val YEARS_AND_MISSING_LINE_INDEX = 4
 
     fun parse(lines: List<String>): Metadata {
         return Metadata(
                 cruTsVersion = parseVersion(lines.get(VERSION_LINE_INDEX)),
                 weatherParameterName = parseWeatherParameterName(lines.get(WEATHER_PARAMETER_NAME_LINE_INDEX)),
                 bbox = parseBbox(lines.get(BBOX_AND_SIZE_LINE_INDEX)),
-                size = parseSize(lines.get(BBOX_AND_SIZE_LINE_INDEX))
+                size = parseSize(lines.get(BBOX_AND_SIZE_LINE_INDEX)),
+                years = parseYears(lines.get(YEARS_AND_MISSING_LINE_INDEX))
         )
     }
 
@@ -64,7 +66,7 @@ class MetadataParser {
         return size
     }
 
-    fun parseBboxAndSizeLine(line: String): MutableList<String> {
+    private fun parseBboxAndSizeLine(line: String): MutableList<String> {
         val line = line.trim()
         val matcher = Pattern.compile("([-\\d\\.]+)").matcher(line)
         val numbers = mutableListOf<String>()
@@ -73,5 +75,18 @@ class MetadataParser {
         }
         return numbers
     }
+
+    fun parseYears(line: String): List<Int> {
+        val line = line.trim()
+        val matcher = Pattern.compile("Years=(\\d+)-(\\d+)").matcher(line)
+        matcher.find()
+        val snippet = matcher.group().trim()
+        val numbers = snippet.substringAfter("Years=")
+        val minMaxYears = numbers.split("-")
+        val years = (minMaxYears.get(0).toInt()..minMaxYears.get(1).toInt()).toList()
+        LOG.info("years = $years")
+        return years
+    }
+
 
 }

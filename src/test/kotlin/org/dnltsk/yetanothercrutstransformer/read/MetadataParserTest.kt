@@ -39,13 +39,21 @@ class MetadataParserTest {
     }
 
     @Test
+    fun years_are_parsed_correctly() {
+        val years = parser.parseYears("[Boxes=   67420] [Years=1991-2000] [Multi=    0.1000] [Missing=-999]")
+        val expectedYears = (1991..2000).toList()
+        assertThat(years).isEqualTo(expectedYears)
+    }
+
+    @Test
     fun metadata_of_sample_file_is_correct() {
-        val metadata = parser.parse(File(GoldenTestData.pathToSampleCruTsFilePre()).readLines())
+        val metadata = parser.parse(File(GoldenTestData.sampleCruTsPreFile()).readLines())
         val expectedMetadata = Metadata(
                 cruTsVersion = "CRU TS 2.1",
                 weatherParameterName = ".pre = precipitation (mm)",
                 bbox = BBox(minX = -180f, minY = -90f, maxX = 180f, maxY = 90f),
-                size = Size(cols = 720, rows = 360)
+                size = Size(cols = 720, rows = 360),
+                years = (1991..2000).toList()
         )
         assertThat(metadata).isEqualTo(expectedMetadata)
     }

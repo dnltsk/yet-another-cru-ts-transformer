@@ -10,7 +10,8 @@ class MockedModels {
                 cruTsVersion = "foo",
                 weatherParameterName = "foo",
                 bbox = BBox(0f, 0f, 0f, 0f),
-                size = Size(0, 0)
+                size = Size(0, 0),
+                years = emptyList()
         )
 
         val mockedPoints = mutableListOf<Point>()

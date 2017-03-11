@@ -4,4 +4,6 @@ data class Metadata(
         val cruTsVersion: String,
         val weatherParameterName: String,
         val bbox: BBox,
-        val size: Size)
+        val size: Size,
+        val years: List<Int>
+)

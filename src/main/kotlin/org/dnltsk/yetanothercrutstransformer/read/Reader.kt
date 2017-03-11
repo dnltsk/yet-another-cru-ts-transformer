@@ -16,7 +16,7 @@ class Reader @Inject constructor(
         val file = openFile(filename)
         val lines = file.readText().lines()
         val metadata = metadataParser.parse(lines)
-        val points = pointParser.read(lines)
+        val points = pointParser.parse(lines, metadata.years)
         return CruTs(
                 sourceFile = file.absoluteFile.absolutePath,
                 metadata = metadata,

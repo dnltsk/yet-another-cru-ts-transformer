@@ -29,7 +29,7 @@ class ReaderTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         `when`(metadataParser.parse(any<List<String>>())).thenReturn(MockedModels.mockedMetadata)
-        `when`(pointParser.read(any<List<String>>())).thenReturn(MockedModels.mockedPoints)
+        `when`(pointParser.parse(any<List<String>>(), any<List<Int>>())).thenReturn(MockedModels.mockedPoints)
     }
 
     @Test
@@ -44,15 +44,15 @@ class ReaderTest {
 
     @Test
     fun existing_file_does_not_throw_FileNotFoundException() {
-        reader.read(GoldenTestData.pathToSampleCruTsFilePre())
+        reader.read(GoldenTestData.sampleCruTsPreFile())
         //no exception. fine.
     }
 
     @Test
     fun read_uses_metadata_and_point_readers_once() {
-        reader.read(GoldenTestData.pathToSampleCruTsFilePre())
+        reader.read(GoldenTestData.sampleCruTsPreFile())
         verify(metadataParser, times(1)).parse(any())
-        verify(pointParser, times(1)).read(any())
+        verify(pointParser, times(1)).parse(any(), any())
     }
 
 
