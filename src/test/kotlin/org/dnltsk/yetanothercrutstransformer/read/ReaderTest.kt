@@ -23,7 +23,7 @@ class ReaderTest {
     lateinit var pointParser: PointParser
 
     @InjectMocks
-    lateinit var reader: Reader
+    lateinit var parser: Parser
 
     @Before
     fun setUp() {
@@ -35,7 +35,7 @@ class ReaderTest {
     @Test
     fun non_existing_file_throws_FileNotFoundException() {
         assertThatThrownBy {
-            reader.read("file-does-not-exist.txt")
+            parser.read("file-does-not-exist.txt")
         }.isInstanceOf(
                 FileNotFoundException::class.java)
                 .hasMessageStartingWith("cannot access ")
@@ -44,13 +44,13 @@ class ReaderTest {
 
     @Test
     fun existing_file_does_not_throw_FileNotFoundException() {
-        reader.read(GoldenTestData.sampleCruTsPreFile())
+        parser.read(GoldenTestData.sampleCruTsPreFile())
         //no exception. fine.
     }
 
     @Test
     fun read_uses_metadata_and_point_readers_once() {
-        reader.read(GoldenTestData.sampleCruTsPreFile())
+        parser.read(GoldenTestData.sampleCruTsPreFile())
         verify(metadataParser, times(1)).parse(any())
         verify(pointParser, times(1)).parse(any(), any())
     }

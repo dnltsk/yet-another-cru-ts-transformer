@@ -2,12 +2,12 @@ package org.dnltsk.yetanothercrutstransformer
 
 import com.google.inject.Guice
 import com.google.inject.Inject
-import org.dnltsk.yetanothercrutstransformer.read.Reader
+import org.dnltsk.yetanothercrutstransformer.read.Parser
 import org.slf4j.LoggerFactory
 import java.io.FileNotFoundException
 
 open class Application @Inject constructor(
-        val reader: Reader
+        val parser: Parser
 ) {
 
     companion object {
@@ -26,7 +26,7 @@ open class Application @Inject constructor(
         if (args.isEmpty()){
             throw FileNotFoundException("input file not provided!")
         }
-        reader.read(filename = args.get(0))
+        parser.read(filename = args.get(0))
     }
 
 

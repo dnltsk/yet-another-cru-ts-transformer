@@ -7,7 +7,7 @@ import java.io.File
 import java.io.FileNotFoundException
 
 @Singleton
-class Reader @Inject constructor(
+class Parser @Inject constructor(
         val metadataParser: MetadataParser,
         val pointParser: PointParser
 ) {
