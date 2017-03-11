@@ -12,3 +12,8 @@ CLT to loads a Climatic Research Unit Timeseries (CRU TS) file into a database t
 
 ## run
 * `java -jar target/yet-another-cru-ts-transformer.jar`
+
+## references
+
+* CRU TS 2.1 Standard<br>
+https://crudata.uea.ac.uk/~timm/grid/CRU_TS_2_1.html
