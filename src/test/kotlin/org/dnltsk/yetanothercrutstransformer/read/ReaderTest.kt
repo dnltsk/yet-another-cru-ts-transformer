@@ -8,34 +8,28 @@ import org.dnltsk.yetanothercrutstransformer.GoldenTestData
 import org.dnltsk.yetanothercrutstransformer.MockedModels
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
+import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
-import org.mockito.junit.MockitoJUnitRunner
-import java.io.File
 import java.io.FileNotFoundException
 
-@RunWith(MockitoJUnitRunner::class)
-class ReaderTest() {
+class ReaderTest {
 
     @Mock
     lateinit var metadataParser: MetadataParser
 
     @Mock
-    lateinit var pointReader: PointReader
+    lateinit var pointParser: PointParser
 
+    @InjectMocks
     lateinit var reader: Reader
 
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        `when`(metadataParser.parse(any<File>())).thenReturn(MockedModels.mockedMetadata)
-        `when`(pointReader.read(any<File>())).thenReturn(MockedModels.mockedPoints)
-        reader = Reader(
-                metadataParser = metadataParser,
-                pointReader = pointReader
-        )
+        `when`(metadataParser.parse(any<List<String>>())).thenReturn(MockedModels.mockedMetadata)
+        `when`(pointParser.read(any<List<String>>())).thenReturn(MockedModels.mockedPoints)
     }
 
     @Test
@@ -58,7 +52,7 @@ class ReaderTest() {
     fun read_uses_metadata_and_point_readers_once() {
         reader.read(GoldenTestData.pathToSampleCruTsFilePre())
         verify(metadataParser, times(1)).parse(any())
-        verify(pointReader, times(1)).read(any())
+        verify(pointParser, times(1)).read(any())
     }
 
 
