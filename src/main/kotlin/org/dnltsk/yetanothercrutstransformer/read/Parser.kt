@@ -12,7 +12,7 @@ class Parser @Inject constructor(
         val pointParser: PointParser
 ) {
 
-    fun read(filename: String?): CruTs {
+    fun parse(filename: String?): CruTs {
         val file = openFile(filename)
         val lines = file.readText().lines()
         val metadata = metadataParser.parse(lines)

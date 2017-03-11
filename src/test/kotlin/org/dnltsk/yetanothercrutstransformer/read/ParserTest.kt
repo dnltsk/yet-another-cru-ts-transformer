@@ -14,7 +14,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import java.io.FileNotFoundException
 
-class ReaderTest {
+class ParserTest {
 
     @Mock
     lateinit var metadataParser: MetadataParser
@@ -35,7 +35,7 @@ class ReaderTest {
     @Test
     fun non_existing_file_throws_FileNotFoundException() {
         assertThatThrownBy {
-            parser.read("file-does-not-exist.txt")
+            parser.parse("file-does-not-exist.txt")
         }.isInstanceOf(
                 FileNotFoundException::class.java)
                 .hasMessageStartingWith("cannot access ")
@@ -44,13 +44,13 @@ class ReaderTest {
 
     @Test
     fun existing_file_does_not_throw_FileNotFoundException() {
-        parser.read(GoldenTestData.sampleCruTsPreFile())
+        parser.parse(GoldenTestData.sampleCruTsPreFile())
         //no exception. fine.
     }
 
     @Test
     fun read_uses_metadata_and_point_readers_once() {
-        parser.read(GoldenTestData.sampleCruTsPreFile())
+        parser.parse(GoldenTestData.sampleCruTsPreFile())
         verify(metadataParser, times(1)).parse(any())
         verify(pointParser, times(1)).parse(any(), any())
     }

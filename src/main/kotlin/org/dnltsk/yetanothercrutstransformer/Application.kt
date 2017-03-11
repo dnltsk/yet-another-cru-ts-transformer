@@ -26,7 +26,7 @@ open class Application @Inject constructor(
         if (args.isEmpty()){
             throw FileNotFoundException("input file not provided!")
         }
-        parser.read(filename = args.get(0))
+        parser.parse(filename = args.get(0))
     }
 
 
