@@ -6,23 +6,22 @@ class MockedModels {
 
     companion object {
 
-        val mockedMetadata = Metadata(
+        val SAMPLE_METADATA = Metadata(
                 climaticVariable = "foo",
-                bbox = BBox(0f, 0f, 0f, 0f),
-                gridSize = GridSize(0, 0),
-                period = Period(fromYear = 0, toYear = 0),
-                multiplier = 0f,
-                missing = 0
+                bbox = BBox(-180f, -90f, 180f, 90f),
+                gridSize = GridSize(10, 10),
+                period = Period(fromYear = 2016, toYear = 2016),
+                multiplier = 0.1f,
+                missing = -999
         )
 
-        val mockedPoints = mutableListOf<Point>()
+        val EMPTY_POINTS = mutableListOf<Point>()
 
-        val mockedCruTs = CruTs(
-                sourceFile = "/foo/bar.txt",
-                metadata = mockedMetadata,
-                points = mockedPoints
+        val mocketCruTs = CruTs(
+                sourceFile = "foo.txt",
+                metadata = SAMPLE_METADATA,
+                points = EMPTY_POINTS
         )
-
     }
 
 }

@@ -3,13 +3,13 @@ package org.dnltsk.yetanothercrutstransformer
 import com.google.inject.Guice
 import com.google.inject.Inject
 import org.dnltsk.yetanothercrutstransformer.read.Parser
-import org.dnltsk.yetanothercrutstransformer.write.GridDbService
+import org.dnltsk.yetanothercrutstransformer.write.DbService
 import org.slf4j.LoggerFactory
 import java.io.FileNotFoundException
 
 open class Application @Inject constructor(
         val parser: Parser,
-        val gridDbService: GridDbService
+        val dbService: DbService
 ) {
 
     companion object {
@@ -29,7 +29,7 @@ open class Application @Inject constructor(
             throw FileNotFoundException("input file not provided!")
         }
         val cruTs = parser.parse(filename = args.get(0))
-        gridDbService.persist(cruTs.points)
+        dbService.persist(cruTs)
 
     }
 

@@ -5,6 +5,4 @@ data class BBox(
         val minY: Float,
         val maxX: Float,
         val maxY: Float
-){
-
-}
+)

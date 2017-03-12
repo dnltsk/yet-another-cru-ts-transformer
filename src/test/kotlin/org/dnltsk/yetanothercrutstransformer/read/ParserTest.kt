@@ -29,8 +29,8 @@ class ParserTest {
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        `when`(metadataParser.parse(any<List<String>>())).thenReturn(MockedModels.mockedMetadata)
-        `when`(gridParser.parse(any<List<String>>(), any<Period>())).thenReturn(MockedModels.mockedPoints)
+        `when`(metadataParser.parse(any<List<String>>())).thenReturn(MockedModels.SAMPLE_METADATA)
+        `when`(gridParser.parse(any<List<String>>(), any<Period>())).thenReturn(MockedModels.EMPTY_POINTS)
     }
 
     @Test
