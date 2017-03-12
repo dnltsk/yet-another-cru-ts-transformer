@@ -5,14 +5,21 @@ import com.google.inject.Singleton
 import org.dnltsk.yetanothercrutstransformer.model.CruTs
 import org.slf4j.LoggerFactory
 import java.sql.Connection
+import java.sql.DriverManager
 
 @Singleton
 class DbService @Inject constructor(
-        private val dbRepository: DbRepository,
-        private val sqLiteConnectionPool: SqLiteConnectionPool
+        private val pointRepository: PointRepository,
+        private val metadataRepository: MetadataRepository
 ){
 
     private val LOG = LoggerFactory.getLogger(this::class.java)
+
+    companion object {
+        val TARGET_FILE = "cru-ts.sqlite"
+        val POINT_TABLE_NAME = "POINT_TABLE"
+        val METADATA_TABLE_NAME = "METADATA_TABLE"
+    }
 
     init {
         try {
@@ -25,12 +32,12 @@ class DbService @Inject constructor(
     fun persist(cruTs: CruTs){
         var conn: Connection? = null
         try {
-            conn = sqLiteConnectionPool.getConnection()
+            conn = openConnection()
             conn.autoCommit = false
-            dbRepository.createMetadataTable(conn)
-            dbRepository.createPointTable(conn)
-            val newMetadataId = dbRepository.insertMetadata(conn, cruTs.metadata)
-            dbRepository.insertPoints(conn, cruTs.points, newMetadataId)
+            metadataRepository.createMetadataTable(conn)
+            pointRepository.createPointTable(conn)
+            val newMetadataId = metadataRepository.insertMetadata(conn, cruTs.metadata)
+            pointRepository.insertPoints(conn, cruTs.points, newMetadataId)
             conn.commit()
             printSuccessMessage(newMetadataId)
         }finally {
@@ -38,11 +45,15 @@ class DbService @Inject constructor(
         }
     }
 
+    private fun openConnection(): Connection {
+        return DriverManager.getConnection("jdbc:sqlite:$TARGET_FILE")
+    }
+
     private fun printSuccessMessage(newMetadataId: Int) {
         LOG.info("Done.")
         LOG.info("You can check the SQLite database via:")
-        LOG.info("> sqlite3 -header -column ${SqLiteConnectionPool.TARGET_FILE} 'SELECT * FROM ${DbRepository.METADATA_TABLE_NAME} WHERE id = $newMetadataId'")
-        LOG.info("> sqlite3 -header -column ${SqLiteConnectionPool.TARGET_FILE} 'SELECT * FROM ${DbRepository.POINT_TABLE_NAME} WHERE metadata_id = $newMetadataId LIMIT 10'")
+        LOG.info("> sqlite3 -header -column ${TARGET_FILE} 'SELECT * FROM ${METADATA_TABLE_NAME} WHERE id = $newMetadataId'")
+        LOG.info("> sqlite3 -header -column ${TARGET_FILE} 'SELECT * FROM ${POINT_TABLE_NAME} WHERE metadata_id = $newMetadataId LIMIT 10'")
     }
 
 }

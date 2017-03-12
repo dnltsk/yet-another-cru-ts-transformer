@@ -1,7 +1,11 @@
 package org.dnltsk.yetanothercrutstransformer.write
 
 import com.google.inject.Singleton
-import org.dnltsk.yetanothercrutstransformer.model.*
+import org.dnltsk.yetanothercrutstransformer.model.BBox
+import org.dnltsk.yetanothercrutstransformer.model.GridSize
+import org.dnltsk.yetanothercrutstransformer.model.Metadata
+import org.dnltsk.yetanothercrutstransformer.model.Period
+import org.dnltsk.yetanothercrutstransformer.write.DbService.Companion.METADATA_TABLE_NAME
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.PreparedStatement
@@ -10,18 +14,13 @@ import java.sql.Statement
 import java.time.Instant
 
 @Singleton
-class DbRepository {
-
-    companion object {
-        val POINT_TABLE_NAME = "POINT_TABLE"
-        val METADATA_TABLE_NAME = "METADATA_TABLE"
-    }
+class MetadataRepository {
 
     private val LOG = LoggerFactory.getLogger(this::class.java)
 
     fun createMetadataTable(conn: Connection) {
         val sql = StringBuilder()
-        sql.append("CREATE TABLE IF NOT EXISTS $METADATA_TABLE_NAME ( ")
+        sql.append("CREATE TABLE IF NOT EXISTS ${METADATA_TABLE_NAME} ( ")
         sql.append("    id INTEGER PRIMARY KEY, ")
         sql.append("    imported_at DATETIME, ")
         sql.append("    climatic_variable VARCHAR(100), ")
@@ -35,24 +34,6 @@ class DbRepository {
         sql.append("    to_year INTERGER, ")
         sql.append("    multiplier REAL, ")
         sql.append("    missing INTEGER  ")
-        sql.append(" ) ")
-        LOG.info(sql.toString())
-
-        val stmt = conn.createStatement()
-        stmt.executeUpdate(sql.toString())
-        stmt.close()
-    }
-
-    fun createPointTable(conn: Connection) {
-        val sql = StringBuilder()
-        sql.append("CREATE TABLE IF NOT EXISTS $POINT_TABLE_NAME ( ")
-        sql.append("    metadata_id INTEGER, ")
-        sql.append("    xref INTEGER, ")
-        sql.append("    yref INTEGER, ")
-        sql.append("    date DATETIME, ")
-        sql.append("    value INTEGER,  ")
-        sql.append("    PRIMARY KEY (metadata_id, xref, yref, date), ")
-        sql.append("    FOREIGN KEY(metadata_id) REFERENCES $METADATA_TABLE_NAME(id) ")
         sql.append(" ) ")
         LOG.info(sql.toString())
 
@@ -98,31 +79,6 @@ class DbRepository {
         return newMetadataId
     }
 
-    fun insertPoints(conn: Connection, points: List<Point>, metadataId: Int) {
-        val sql = StringBuilder()
-        sql.append("INSERT INTO $POINT_TABLE_NAME ( ")
-        sql.append("    metadata_id, ")
-        sql.append("    xref, yref, ")
-        sql.append("    date, value ")
-        sql.append(" ) VALUES ( ")
-        sql.append("    ?, ?, ?, ?, ? ")
-        sql.append(" ) ")
-        LOG.info(sql.toString() + " ... ")
-        val tenPercentSteps = calcTenPercentSteps(points.size)
-        points.forEachIndexed { index, point ->
-            val prepStmt = conn.prepareStatement(sql.toString())
-            prepStmt.setInt(1, metadataId)
-            prepStmt.setInt(2, point.gridRef.col)
-            prepStmt.setInt(3, point.gridRef.row)
-            prepStmt.setString(4, point.date.toString())
-            prepStmt.setInt(5, point.value)
-            prepStmt.executeUpdate()
-            prepStmt.close()
-            logProgress(index, points.size, tenPercentSteps)
-        }
-        conn.commit()
-    }
-
     fun selectMetadata(conn: Connection, metadataId: Int): Metadata? {
         var prepStmt: Statement? = null
         var rs: ResultSet? = null
@@ -163,56 +119,12 @@ class DbRepository {
         return null
     }
 
-    fun selectPoint(conn: Connection, date: Instant, gridRef: GridRef, metadataId: Int): Point? {
-        var prepStmt: Statement? = null
-        var rs: ResultSet? = null
-        try {
-            val sql = StringBuilder()
-            sql.append("SELECT * FROM $POINT_TABLE_NAME ")
-            sql.append("    WHERE xref = ? AND yref = ? AND date = ? ")
-            LOG.info(sql.toString() + " ... ")
-            prepStmt = conn.prepareStatement(sql.toString())
-            prepStmt.setInt(1, gridRef.col)
-            prepStmt.setInt(2, gridRef.row)
-            prepStmt.setString(3, date.toString())
-
-            rs = prepStmt.executeQuery()
-            if (rs.next()) {
-                return Point(
-                        gridRef = GridRef(col = rs.getInt("xref"), row = rs.getInt("yref")),
-                        date = Instant.parse(rs.getString("date")),
-                        value = rs.getInt("value")
-                )
-            }
-        } finally {
-            rs?.close()
-            prepStmt?.close()
-        }
-        return null
-    }
-
     private fun getGeneratedMetadataId(prepStmt: PreparedStatement): Int {
         val rs = prepStmt.generatedKeys
         rs.next()
         val newMetadataId = rs.getInt(1)
         rs.close()
         return newMetadataId
-    }
-
-    private fun calcTenPercentSteps(numPoints: Int): IntProgression {
-        var tenPercentStepDivision = 10
-        if (numPoints < tenPercentStepDivision) {
-            tenPercentStepDivision = numPoints
-        }
-        val step = numPoints / tenPercentStepDivision
-        return IntProgression.fromClosedRange(0, numPoints, step)
-    }
-
-    private fun logProgress(index: Int, numPoints: Int, steps: IntProgression) {
-        if (steps.contains(index)) {
-            val perc = Math.round((index.toDouble() / numPoints.toDouble()) * 100.0)
-            LOG.info("$index points written ($perc%)...")
-        }
     }
 
 }
