@@ -7,11 +7,12 @@ class MockedModels {
     companion object {
 
         val mockedMetadata = Metadata(
-                cruTsVersion = "foo",
-                weatherParameterName = "foo",
+                climaticVariable = "foo",
                 bbox = BBox(0f, 0f, 0f, 0f),
-                size = Size(0, 0),
-                years = emptyList()
+                gridSize = GridSize(0, 0),
+                period = Period(fromYear = 0, toYear = 0),
+                multiplier = 0f,
+                missing = 0
         )
 
         val mockedPoints = mutableListOf<Point>()

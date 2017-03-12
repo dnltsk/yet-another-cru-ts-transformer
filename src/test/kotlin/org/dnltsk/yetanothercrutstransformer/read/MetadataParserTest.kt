@@ -3,25 +3,20 @@ package org.dnltsk.yetanothercrutstransformer.read
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.dnltsk.yetanothercrutstransformer.GoldenTestData
 import org.dnltsk.yetanothercrutstransformer.model.BBox
+import org.dnltsk.yetanothercrutstransformer.model.GridSize
 import org.dnltsk.yetanothercrutstransformer.model.Metadata
-import org.dnltsk.yetanothercrutstransformer.model.Size
+import org.dnltsk.yetanothercrutstransformer.model.Period
 import org.junit.Test
 import java.io.File
 
 class MetadataParserTest {
 
-    private val parser = MetadataParser()
+    private val parser = MetadataParser(VersionValidator())
 
     @Test
-    fun version_is_parsed_correctly() {
-        val version = parser.parseVersion(" foo Version   ")
-        assertThat(version).isEqualTo("foo Version")
-    }
-
-    @Test
-    fun weatherParameterName_is_parsed_correctly() {
-        val weatherParameterName = parser.parseWeatherParameterName(" foo Name (km/h)    ")
-        assertThat(weatherParameterName).isEqualTo("foo Name (km/h)")
+    fun climaticVariable_is_parsed_correctly() {
+        val climaticVariable = parser.parseClimateVariable(" foo Name (km/h)    ")
+        assertThat(climaticVariable).isEqualTo("foo Name (km/h)")
     }
 
     @Test
@@ -34,26 +29,27 @@ class MetadataParserTest {
     @Test
     fun size_is_parsed_correctly() {
         val size = parser.parseSize("[Long=-180.00, 180.00] [Lati= -90.00,  90.00] [Grid X,Y= 720, 360]")
-        val expectedSize = Size(cols = 720, rows = 360)
+        val expectedSize = GridSize(width = 720, height = 360)
         assertThat(size).isEqualTo(expectedSize)
     }
 
     @Test
-    fun years_are_parsed_correctly() {
-        val years = parser.parseYears("[Boxes=   67420] [Years=1991-2000] [Multi=    0.1000] [Missing=-999]")
-        val expectedYears = (1991..2000).toList()
-        assertThat(years).isEqualTo(expectedYears)
+    fun period_is_parsed_correctly() {
+        val period = parser.parsePeriod("[Boxes=   67420] [Years=1991-2000] [Multi=    0.1000] [Missing=-999]")
+        val expectedPeriod = Period(fromYear = 1991, toYear = 2000)
+        assertThat(period).isEqualTo(expectedPeriod)
     }
 
     @Test
     fun metadata_of_sample_file_is_correct() {
         val metadata = parser.parse(File(GoldenTestData.sampleCruTsPreFile()).readLines())
         val expectedMetadata = Metadata(
-                cruTsVersion = "CRU TS 2.1",
-                weatherParameterName = ".pre = precipitation (mm)",
+                climaticVariable = ".pre = precipitation (mm)",
                 bbox = BBox(minX = -180f, minY = -90f, maxX = 180f, maxY = 90f),
-                size = Size(cols = 720, rows = 360),
-                years = (1991..2000).toList()
+                gridSize = GridSize(width = 720, height = 360),
+                period = Period(fromYear = 1991, toYear = 2000),
+                multiplier = 0.1000f,
+                missing = -999
         )
         assertThat(metadata).isEqualTo(expectedMetadata)
     }

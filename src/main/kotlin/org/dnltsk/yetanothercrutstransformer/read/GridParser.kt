@@ -2,6 +2,7 @@ package org.dnltsk.yetanothercrutstransformer.read
 
 import com.google.inject.Singleton
 import org.dnltsk.yetanothercrutstransformer.model.GridRef
+import org.dnltsk.yetanothercrutstransformer.model.Period
 import org.dnltsk.yetanothercrutstransformer.model.Point
 import org.dnltsk.yetanothercrutstransformer.util.batch
 import java.time.Instant
@@ -9,31 +10,32 @@ import java.util.*
 
 
 @Singleton
-class PointParser {
+class GridParser {
 
-    private val DATA_BEGINS_AT_LINE_INDEX = 5
+    private val FIRST_GRID_BOX_AT_LINE_INDEX = 5
 
-    fun parse(lines: List<String>, years: List<Int>): List<Point> {
+    fun parse(lines: List<String>, period: Period): List<Point> {
         val allPoints = mutableListOf<Point>()
-        val dataLines = lines.subList(DATA_BEGINS_AT_LINE_INDEX, lines.size)
-        val numLinesPerTimeSeries = years.size + 1
+        val dataLines = lines.subList(FIRST_GRID_BOX_AT_LINE_INDEX, lines.size)
+        val years = (period.fromYear..period.toYear).toList()
+        val numLinesPerGridBox = years.size + 1
 
         dataLines.asSequence()
-                .batch(numLinesPerTimeSeries)
-                .forEach { timeSeriesLines ->
-                    val pointOfTimeSeries = parseTimeSeries(
-                            timeSeriesLines = timeSeriesLines,
+                .batch(numLinesPerGridBox)
+                .forEach { gridBoxLines ->
+                    val pointOfGribBox = parseGridBox(
+                            gridBoxLines = gridBoxLines,
                             years = years
                     )
-                    allPoints.addAll(pointOfTimeSeries)
+                    allPoints.addAll(pointOfGribBox)
                 }
         return allPoints
     }
 
-    fun parseTimeSeries(timeSeriesLines: List<String>, years: List<Int>): List<Point> {
-        val pointsOfTimeSeries = mutableListOf<Point>()
-        val gridRef = parseGridRef(timeSeriesLines.first())
-        timeSeriesLines.forEachIndexed { index, yearLine ->
+    fun parseGridBox(gridBoxLines: List<String>, years: List<Int>): List<Point> {
+        val pointsOfGridBox = mutableListOf<Point>()
+        val gridRef = parseGridRef(gridBoxLines.first())
+        gridBoxLines.forEachIndexed { index, yearLine ->
             if (index == 0) {
                 return@forEachIndexed
             }
@@ -42,10 +44,10 @@ class PointParser {
                     yearLine = yearLine,
                     year = year,
                     gridRef = gridRef)
-            pointsOfTimeSeries.addAll(pointsOfYear)
+            pointsOfGridBox.addAll(pointsOfYear)
         }
 
-        return pointsOfTimeSeries
+        return pointsOfGridBox
     }
 
     fun parseYear(yearLine: String, year: Int, gridRef: GridRef): List<Point> {
@@ -72,11 +74,9 @@ class PointParser {
     }
 
     fun parseGridRef(line: String): GridRef {
-        val commaNumbers = line.trim().substringAfter("Grid-ref=")
-        val splitNumbers = commaNumbers.split(",")
         return GridRef(
-                col = splitNumbers[0].trim().toInt(),
-                row = splitNumbers[1].trim().toInt()
+                col = line.substring(9, 13).trim().toInt(),
+                row = line.substring(14, 18).trim().toInt()
         )
     }
 }

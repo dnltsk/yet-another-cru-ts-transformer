@@ -9,14 +9,14 @@ import java.io.FileNotFoundException
 @Singleton
 class Parser @Inject constructor(
         val metadataParser: MetadataParser,
-        val pointParser: PointParser
+        val gridParser: GridParser
 ) {
 
     fun parse(filename: String?): CruTs {
         val file = openFile(filename)
         val lines = file.readText().lines()
         val metadata = metadataParser.parse(lines)
-        val points = pointParser.parse(lines, metadata.years)
+        val points = gridParser.parse(lines, metadata.period)
         return CruTs(
                 sourceFile = file.absoluteFile.absolutePath,
                 metadata = metadata,

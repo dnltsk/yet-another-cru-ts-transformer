@@ -10,9 +10,9 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.time.Instant
 
-class SqLiteRepositoryTest {
+class GridRepositoryTest {
 
-    var pointDbRepository = PointDbRepository()
+    var pointDbRepository = GridDbRepository()
 
     lateinit var memoryConn : Connection
     @Before

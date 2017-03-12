@@ -1,9 +1,10 @@
 package org.dnltsk.yetanothercrutstransformer.model
 
 data class Metadata(
-        val cruTsVersion: String,
-        val weatherParameterName: String,
+        val climaticVariable: String,
         val bbox: BBox,
-        val size: Size,
-        val years: List<Int>
-)
+        val gridSize: GridSize,
+        val period: Period,
+        val multiplier: Float,
+        val missing: Int
+        )

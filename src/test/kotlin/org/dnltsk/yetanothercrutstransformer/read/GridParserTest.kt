@@ -3,13 +3,14 @@ package org.dnltsk.yetanothercrutstransformer.read
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.dnltsk.yetanothercrutstransformer.GoldenTestData
 import org.dnltsk.yetanothercrutstransformer.model.GridRef
+import org.dnltsk.yetanothercrutstransformer.model.Period
 import org.dnltsk.yetanothercrutstransformer.model.Point
 import org.junit.Test
 import java.time.Instant
 
-class PointParserTest {
+class GridParserTest {
 
-    private val parser = PointParser()
+    private val parser = GridParser()
 
     @Test
     fun gridRef_is_parsed_correctly() {
@@ -19,9 +20,9 @@ class PointParserTest {
     }
 
     @Test
-    fun gridRef_with_single_number_is_parsed_correctly() {
-        val gridRef = parser.parseGridRef("Grid-ref=   1, 148")
-        val expectedGridRef = GridRef(col = 1, row = 148)
+    fun gridRef_with_max_length_is_parsed_correctly() {
+        val gridRef = parser.parseGridRef("Grid-ref=1111,9999")
+        val expectedGridRef = GridRef(col = 1111, row = 9999)
         assertThat(gridRef).isEqualTo(expectedGridRef)
     }
 
@@ -52,15 +53,15 @@ class PointParserTest {
     }
 
     @Test
-    fun timeSeries_is_parsed_correctly() {
-        val timeSeriesLines = listOf(
+    fun gridBox_is_parsed_correctly() {
+        val gribBoxLines = listOf(
                 "Grid-ref= 116, 266",
                 "499  405 1593  582  729  214  335  383    8  494 1501  807",
                 "498  361  392  691   98  558  271   68  253  691  684 1524",
                 "1321  442  995 1016  760  508  307  527    3  449  332 1028"
         )
-        val pointsOfTimeSeries = parser.parseTimeSeries(
-                timeSeriesLines = timeSeriesLines,
+        val pointsOfGridBox = parser.parseGridBox(
+                gridBoxLines = gribBoxLines,
                 years = listOf(2000, 1985, 2017)
         )
         val expectedFirstPoint = Point(
@@ -78,16 +79,16 @@ class PointParserTest {
                 gridRef = GridRef(col = 116, row = 266),
                 value = 1028
         )
-        assertThat(pointsOfTimeSeries.first()).isEqualTo(expectedFirstPoint)
-        assertThat(pointsOfTimeSeries.get(17)).isEqualTo(expectedMiddlePoint)
-        assertThat(pointsOfTimeSeries.last()).isEqualTo(expectedLastPoint)
+        assertThat(pointsOfGridBox.first()).isEqualTo(expectedFirstPoint)
+        assertThat(pointsOfGridBox.get(17)).isEqualTo(expectedMiddlePoint)
+        assertThat(pointsOfGridBox.last()).isEqualTo(expectedLastPoint)
     }
 
     @Test
     fun sampleFile_is_parsed_correctly() {
         val allPoints = parser.parse(
                 lines = GoldenTestData.sampleCruTsPreLines(),
-                years = (1991..2000).toList()
+                period = Period(fromYear = 1991, toYear = 2000)
         )
         val expectedFirstPoint = Point(
                 date = Instant.parse("1991-01-01T00:00:00Z"),

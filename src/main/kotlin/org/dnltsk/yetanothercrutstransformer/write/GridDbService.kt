@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory
 import java.sql.Connection
 
 @Singleton
-class PointDbService @Inject constructor(
-        private val pointDbRepository: PointDbRepository,
+class GridDbService @Inject constructor(
+        private val gridDbRepository: GridDbRepository,
         private val sqLiteConnectionPool: SqLiteConnectionPool
 ){
 
@@ -27,9 +27,9 @@ class PointDbService @Inject constructor(
         try {
             conn = sqLiteConnectionPool.getConnection()
             conn.autoCommit = false
-            pointDbRepository.dropTableIfExists(conn)
-            pointDbRepository.createTable(conn)
-            pointDbRepository.insert(conn, points)
+            gridDbRepository.dropTableIfExists(conn)
+            gridDbRepository.createTable(conn)
+            gridDbRepository.insert(conn, points)
             conn.commit()
         }finally {
             conn?.close()

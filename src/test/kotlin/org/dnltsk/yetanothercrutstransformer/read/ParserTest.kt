@@ -6,6 +6,7 @@ import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy
 import org.dnltsk.yetanothercrutstransformer.GoldenTestData
 import org.dnltsk.yetanothercrutstransformer.MockedModels
+import org.dnltsk.yetanothercrutstransformer.model.Period
 import org.junit.Before
 import org.junit.Test
 import org.mockito.InjectMocks
@@ -20,7 +21,7 @@ class ParserTest {
     lateinit var metadataParser: MetadataParser
 
     @Mock
-    lateinit var pointParser: PointParser
+    lateinit var gridParser: GridParser
 
     @InjectMocks
     lateinit var parser: Parser
@@ -29,7 +30,7 @@ class ParserTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         `when`(metadataParser.parse(any<List<String>>())).thenReturn(MockedModels.mockedMetadata)
-        `when`(pointParser.parse(any<List<String>>(), any<List<Int>>())).thenReturn(MockedModels.mockedPoints)
+        `when`(gridParser.parse(any<List<String>>(), any<Period>())).thenReturn(MockedModels.mockedPoints)
     }
 
     @Test
@@ -52,7 +53,7 @@ class ParserTest {
     fun read_uses_metadata_and_point_readers_once() {
         parser.parse(GoldenTestData.sampleCruTsPreFile())
         verify(metadataParser, times(1)).parse(any())
-        verify(pointParser, times(1)).parse(any(), any())
+        verify(gridParser, times(1)).parse(any(), any())
     }
 
 
