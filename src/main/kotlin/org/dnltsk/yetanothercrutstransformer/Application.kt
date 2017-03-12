@@ -3,11 +3,13 @@ package org.dnltsk.yetanothercrutstransformer
 import com.google.inject.Guice
 import com.google.inject.Inject
 import org.dnltsk.yetanothercrutstransformer.read.Parser
+import org.dnltsk.yetanothercrutstransformer.write.PointDbService
 import org.slf4j.LoggerFactory
 import java.io.FileNotFoundException
 
 open class Application @Inject constructor(
-        val parser: Parser
+        val parser: Parser,
+        val pointDbService: PointDbService
 ) {
 
     companion object {
@@ -17,7 +19,7 @@ open class Application @Inject constructor(
         fun main(args: Array<String>) {
             val injector = Guice.createInjector(Module())
             val app = injector.getInstance(Application::class.java)
-            app.run()
+            app.run(*args)
         }
     }
 
@@ -26,7 +28,9 @@ open class Application @Inject constructor(
         if (args.isEmpty()){
             throw FileNotFoundException("input file not provided!")
         }
-        parser.parse(filename = args.get(0))
+        val cruTs = parser.parse(filename = args.get(0))
+        pointDbService.persist(cruTs.points)
+
     }
 
 
