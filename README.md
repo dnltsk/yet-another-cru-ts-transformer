@@ -6,12 +6,17 @@ Command Line Interface (CLI) to loads a Climatic Research Unit Timeseries (CRU T
 ## requirements
 * Java 8
 * Maven 3.3.x
+* SQLite (to work with the resulting database)
 
 ## build
 * `mvn clean test package`
 
 ## run
-* `java -jar target/yet-another-cru-ts-transformer.jar`
+* `java -jar target/yet-another-cru-ts-transformer.jar sample-cru-ts-file.pre`
+  * creates SQLite db in file `cru.ts.sqlite`
+* `sqlite3 -header -column cru-ts.sqlite 'select * from CRU_TS_TABLE LIMIT 10'`
+  * to check the resulting database
+
 
 ## references
 
