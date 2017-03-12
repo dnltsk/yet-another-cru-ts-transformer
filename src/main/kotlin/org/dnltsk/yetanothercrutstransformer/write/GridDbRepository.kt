@@ -88,7 +88,8 @@ class GridDbRepository {
     }
 
     private fun  calcTenPercentSteps(numPoints: Int): IntProgression {
-        return IntProgression.fromClosedRange(0, numPoints, numPoints/10)
+        val step = minOf(10, numPoints)
+        return IntProgression.fromClosedRange(0, numPoints, step)
     }
 
     private fun logProgress(index: Int, numPoints: Int, steps: IntProgression) {
