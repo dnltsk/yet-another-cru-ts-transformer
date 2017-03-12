@@ -10,7 +10,7 @@ import java.sql.Statement
 import java.time.Instant
 
 @Singleton
-class PointDbRepository {
+class GridDbRepository {
 
     private val LOG = LoggerFactory.getLogger(this::class.java)
     private val TARGET_TABLE = "CRU_TS_TABLE"
@@ -33,6 +33,7 @@ class PointDbRepository {
     fun dropTableIfExists(conn: Connection) {
         val sql = "DROP TABLE IF EXISTS $TARGET_TABLE"
         LOG.info(sql)
+
         val stmt = conn.createStatement()
         stmt.executeUpdate(sql.toString())
         stmt.close()
@@ -41,6 +42,7 @@ class PointDbRepository {
     fun insert(conn: Connection, points: List<Point>) {
         val sql = "INSERT INTO $TARGET_TABLE VALUES ( ?, ?, ?, ? ) "
         LOG.info(sql + " ... ")
+        val tenPercentSteps = calcTenPercentSteps(points.size)
         points.forEachIndexed { index, point ->
             val prepStmt = conn.prepareStatement(sql)
             prepStmt.setInt(1, point.gridRef.col)
@@ -49,7 +51,7 @@ class PointDbRepository {
             prepStmt.setInt(4, point.value)
             prepStmt.executeUpdate()
             prepStmt.close()
-            logProgress(index, points.size)
+            logProgress(index, points.size, tenPercentSteps)
         }
         conn.commit()
         LOG.info("Done.")
@@ -60,7 +62,6 @@ class PointDbRepository {
     fun select(conn: Connection, date: Instant, gridRef: GridRef): Point? {
         var prepStmt: Statement? = null
         var rs: ResultSet? = null
-
         try {
             val sql = StringBuilder()
             sql.append("SELECT * FROM $TARGET_TABLE ")
@@ -83,12 +84,15 @@ class PointDbRepository {
             rs?.close()
             prepStmt?.close()
         }
-
         return null
     }
 
-    private fun logProgress(index: Int, numPoints: Int) {
-        if (index.toString().endsWith("00000")) {
+    private fun  calcTenPercentSteps(numPoints: Int): IntProgression {
+        return IntProgression.fromClosedRange(0, numPoints, numPoints/10)
+    }
+
+    private fun logProgress(index: Int, numPoints: Int, steps: IntProgression) {
+        if (steps.contains(index)) {
             val perc = Math.round((index.toDouble() / numPoints.toDouble()) * 100.0)
             LOG.info("$index points written ($perc%)...")
         }
