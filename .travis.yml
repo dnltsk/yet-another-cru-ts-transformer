@@ -1,6 +1,6 @@
 language: java
 sudo: false #faster builds
-script: mvn test #somehow needed to create valid jacoco reports
+script: mvn test package #somehow needed to create valid jacoco reports
 
 jdk:
   - oraclejdk8
