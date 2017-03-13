@@ -17,6 +17,12 @@ class MockedModels {
 
         val EMPTY_POINTS = mutableListOf<Point>()
 
+        val SAMPLE_CRU_TS = CruTs(
+                sourceFile = "foo.txt",
+                metadata = SAMPLE_METADATA,
+                points = EMPTY_POINTS
+        )
+
     }
 
 }
