@@ -45,13 +45,13 @@ class ParserTest {
 
     @Test
     fun existing_file_does_not_throw_FileNotFoundException() {
-        parser.parse(GoldenTestData.sampleCruTsPreFile())
+        parser.parse(GoldenTestData.sampleCruTsPrePath())
         //no exception. fine.
     }
 
     @Test
     fun read_uses_metadata_and_point_readers_once() {
-        parser.parse(GoldenTestData.sampleCruTsPreFile())
+        parser.parse(GoldenTestData.sampleCruTsPrePath())
         verify(metadataParser, times(1)).parse(any())
         verify(gridParser, times(1)).parse(any(), any())
     }

@@ -5,7 +5,6 @@ import com.google.inject.Inject
 import org.dnltsk.yetanothercrutstransformer.read.Parser
 import org.dnltsk.yetanothercrutstransformer.write.DbService
 import org.slf4j.LoggerFactory
-import java.io.FileNotFoundException
 
 open class Application @Inject constructor(
         val parser: Parser,
@@ -24,9 +23,11 @@ open class Application @Inject constructor(
     }
 
     fun run(vararg args: String?) {
+        LOG.info("#")
         LOG.info("# Yet Another CRU TS Transformer")
+        LOG.info("#")
         if (args.isEmpty()){
-            throw FileNotFoundException("input file not provided!")
+            throw IllegalArgumentException("input file not provided!")
         }
         val cruTs = parser.parse(filename = args.get(0))
         dbService.persist(cruTs)

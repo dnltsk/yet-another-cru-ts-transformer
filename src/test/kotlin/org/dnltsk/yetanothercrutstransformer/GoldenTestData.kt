@@ -7,13 +7,13 @@ class GoldenTestData {
 
     companion object {
 
-        fun sampleCruTsPreFile(): String {
+        fun sampleCruTsPrePath(): String {
             val path = Paths.get(this::class.java.getResource("/golden-test-data/sample-cru-ts-file.pre").toURI())
             return path.toString()
         }
 
         fun sampleCruTsPreLines():List<String>{
-            return File(sampleCruTsPreFile()).readLines()
+            return File(sampleCruTsPrePath()).readLines()
         }
     }
 

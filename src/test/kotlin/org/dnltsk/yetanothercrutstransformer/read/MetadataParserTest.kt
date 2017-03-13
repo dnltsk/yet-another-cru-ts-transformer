@@ -42,7 +42,7 @@ class MetadataParserTest {
 
     @Test
     fun metadata_of_sample_file_is_correct() {
-        val metadata = parser.parse(File(GoldenTestData.sampleCruTsPreFile()).readLines())
+        val metadata = parser.parse(File(GoldenTestData.sampleCruTsPrePath()).readLines())
         val expectedMetadata = Metadata(
                 climaticVariable = ".pre = precipitation (mm)",
                 bbox = BBox(minX = -180f, minY = -90f, maxX = 180f, maxY = 90f),
