@@ -4,11 +4,13 @@ import com.google.inject.Guice
 import com.google.inject.Inject
 import org.dnltsk.yetanothercrutstransformer.read.Parser
 import org.dnltsk.yetanothercrutstransformer.write.DbService
+import org.dnltsk.yetanothercrutstransformer.write.geotiff.GeotiffWriter
 import org.slf4j.LoggerFactory
 
 open class Application @Inject constructor(
         val parser: Parser,
-        val dbService: DbService
+        val dbService: DbService,
+        val geotiffWriter: GeotiffWriter
 ) {
 
     companion object {
@@ -30,8 +32,8 @@ open class Application @Inject constructor(
             throw IllegalArgumentException("input file not provided!")
         }
         val cruTs = parser.parse(filename = args.get(0))
-        dbService.persist(cruTs)
-
+        //dbService.persist(cruTs)
+        geotiffWriter.writeGeotiff(cruTs)
     }
 
 
