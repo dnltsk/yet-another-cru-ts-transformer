@@ -13,10 +13,15 @@ Command Line Interface (CLI) to loads a Climatic Research Unit Timeseries (CRU T
 
 ## run
 * `java -jar target/yet-another-cru-ts-transformer.jar sample-cru-ts-file.pre`
-  * creates SQLite db in file `cru.ts.sqlite`
-* `sqlite3 -header -column cru-ts.sqlite 'select * from CRU_TS_TABLE LIMIT 10'`
-  * to check the resulting database
 
+The command above creates a SQLite DB in file `cru-ts.sqlite`
+
+## verify
+* check metadata:<br>
+`sqlite3 -header -column cru-ts.sqlite 'SELECT * FROM METADATA_TABLE'`
+* check points:<br>
+`sqlite3 -header -column cru-ts.sqlite 'SELECT * FROM POINT_TABLE LIMIT 10'`
+  
 
 ## references
 
