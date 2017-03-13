@@ -21,14 +21,6 @@ class DbService @Inject constructor(
         val METADATA_TABLE_NAME = "METADATA_TABLE"
     }
 
-    init {
-        try {
-            Class.forName("org.sqlite.JDBC")
-        } catch (all: Throwable) {
-            LOG.error("Failed to load the org.sqlite.JDBC driver")
-        }
-    }
-
     fun persist(cruTs: CruTs){
         var conn: Connection? = null
         try {
