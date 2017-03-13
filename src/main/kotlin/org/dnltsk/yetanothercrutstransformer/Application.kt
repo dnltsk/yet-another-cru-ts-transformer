@@ -23,9 +23,9 @@ open class Application @Inject constructor(
     }
 
     fun run(vararg args: String?) {
-        LOG.info("#")
-        LOG.info("# Yet Another CRU TS Transformer")
-        LOG.info("#")
+        LOG.info("----------------------------------")
+        LOG.info("  Yet Another CRU TS Transformer ")
+        LOG.info("----------------------------------")
         if (args.isEmpty()){
             throw IllegalArgumentException("input file not provided!")
         }
