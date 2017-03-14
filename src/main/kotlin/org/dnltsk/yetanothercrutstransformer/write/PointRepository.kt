@@ -3,6 +3,7 @@ package org.dnltsk.yetanothercrutstransformer.write
 import com.google.inject.Singleton
 import org.dnltsk.yetanothercrutstransformer.model.GridRef
 import org.dnltsk.yetanothercrutstransformer.model.Point
+import org.dnltsk.yetanothercrutstransformer.util.batch
 import org.dnltsk.yetanothercrutstransformer.write.DbService.Companion.METADATA_TABLE_NAME
 import org.dnltsk.yetanothercrutstransformer.write.DbService.Companion.POINT_TABLE_NAME
 import org.slf4j.LoggerFactory
@@ -35,28 +36,44 @@ class PointRepository {
     }
 
     fun insertPoints(conn: Connection, points: List<Point>, metadataId: Int) {
-        val sql = StringBuilder()
-        sql.append("INSERT INTO $POINT_TABLE_NAME ( ")
-        sql.append("    metadata_id, ")
-        sql.append("    xref, yref, ")
-        sql.append("    date, value ")
-        sql.append(" ) VALUES ( ")
-        sql.append("    ?, ?, ?, ?, ? ")
-        sql.append(" ) ")
-        LOG.info(sql.toString() + " ... ")
-        val tenPercentSteps = calcTenPercentSteps(points.size)
-        points.forEachIndexed { index, point ->
-            val prepStmt = conn.prepareStatement(sql.toString())
-            prepStmt.setInt(1, metadataId)
-            prepStmt.setInt(2, point.gridRef.col)
-            prepStmt.setInt(3, point.gridRef.row)
-            prepStmt.setString(4, point.date.toString())
-            prepStmt.setInt(5, point.value)
-            prepStmt.executeUpdate()
-            prepStmt.close()
-            logProgress(index, points.size, tenPercentSteps)
+        val start = System.currentTimeMillis()
+        val batchSize = 1
+        val numBatches = points.size / batchSize
+        val tenPercentSteps = calcTenPercentSteps(numBatches)
+        points.asSequence().batch(batchSize).forEachIndexed { batchIndex, batchPoints ->
+            var sql = StringBuilder()
+            batchPoints.forEachIndexed { index, point ->
+                if (index == 0) {
+                    sql.append("INSERT INTO $POINT_TABLE_NAME ( ")
+                    sql.append("    metadata_id, ")
+                    sql.append("    xref, yref, ")
+                    sql.append("    date, value ")
+                    sql.append(" ) VALUES ")
+                    sql.append(composePointAsSelect(metadataId, point))
+                } else {
+                    sql.append(" , ")
+                    sql.append(composePointAsSelect(metadataId, point))
+                }
+            }
+            //LOG.info(sql.toString() + " ... ")
+            val stmt = conn.createStatement()
+            stmt.executeUpdate(sql.toString())
+            logProgress(batchIndex, batchSize, batchPoints.size, points.size, tenPercentSteps)
         }
         conn.commit()
+        val durationInMillis = System.currentTimeMillis() - start
+        LOG.info("insert duration = "+(durationInMillis/1000.0)+"s")
+    }
+
+    private fun composePointAsSelect(metadataId: Int, point: Point): StringBuilder {
+        val select = StringBuilder(" ( ")
+        select.append("    ${metadataId}, ")
+        select.append("    ${point.gridRef.col}, ")
+        select.append("    ${point.gridRef.row}, ")
+        select.append("    '${point.date}', ")
+        select.append("    ${point.value} ")
+        select.append(" ) ")
+        return select
     }
 
     fun selectPoint(conn: Connection, date: Instant, gridRef: GridRef, metadataId: Int): Point? {
@@ -98,13 +115,14 @@ class PointRepository {
             tenPercentStepDivision = numPoints
         }
         val step = numPoints / tenPercentStepDivision
-        return IntProgression.fromClosedRange(0, numPoints, step)
+        return IntProgression.fromClosedRange(1, numPoints, step)
     }
 
-    private fun logProgress(index: Int, numPoints: Int, steps: IntProgression) {
-        if (steps.contains(index)) {
-            val perc = Math.round((index.toDouble() / numPoints.toDouble()) * 100.0)
-            LOG.info("$index points written ($perc%)...")
+    private fun logProgress(batchIndex: Int, batchSize: Int, currentBatchSize: Int, numAllPoints: Int, steps: IntProgression) {
+        val numInsertedPoints = batchIndex * batchSize + currentBatchSize
+        if ((batchIndex != 0 && steps.contains(batchIndex)) || numInsertedPoints == numAllPoints) {
+            val perc = Math.round((numInsertedPoints.toDouble() / numAllPoints.toDouble())*100.0)
+            LOG.info("${numInsertedPoints} points written ($perc%)...")
         }
     }
 
