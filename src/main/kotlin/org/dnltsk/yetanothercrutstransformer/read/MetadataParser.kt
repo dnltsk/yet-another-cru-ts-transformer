@@ -9,21 +9,17 @@ import org.dnltsk.yetanothercrutstransformer.model.Period
 import org.slf4j.LoggerFactory
 
 @Singleton
-class MetadataParser @Inject constructor(
-        val versionValidator: VersionValidator
-) {
+class MetadataParser @Inject constructor() {
 
     private val LOG = LoggerFactory.getLogger(this::class.java)
 
     private val CLIMATIC_VARIABLE_LINE_INDEX = 1
-    private val VERSION_LINE_INDEX = 2
     private val BBOX_AND_SIZE_LINE_INDEX = 3
     private val PERIOD_LINE_INDEX = 4
     private val MULTIPLIER_LINE_INDEX = 4
     private val MISSING_LINE_INDEX = 4
 
     fun parse(lines: List<String>): Metadata {
-        validate(lines)
         return Metadata(
                 climaticVariable = parseClimateVariable(lines.get(CLIMATIC_VARIABLE_LINE_INDEX)),
                 bbox = parseBbox(lines.get(BBOX_AND_SIZE_LINE_INDEX)),
@@ -32,10 +28,6 @@ class MetadataParser @Inject constructor(
                 multiplier = parseMultiplier(lines.get(MULTIPLIER_LINE_INDEX)),
                 missing = parseMissing(lines.get(MISSING_LINE_INDEX))
         )
-    }
-
-    private fun validate(lines: List<String>) {
-        versionValidator.validateVersion(lines.get(VERSION_LINE_INDEX))
     }
 
     fun parseClimateVariable(line: String): String {

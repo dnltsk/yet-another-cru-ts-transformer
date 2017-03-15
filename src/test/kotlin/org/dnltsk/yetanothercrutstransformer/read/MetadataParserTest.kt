@@ -11,7 +11,7 @@ import java.io.File
 
 class MetadataParserTest {
 
-    private val parser = MetadataParser(VersionValidator())
+    private val parser = MetadataParser()
 
     @Test
     fun climaticVariable_is_parsed_correctly() {
