@@ -30,13 +30,13 @@ class MetadataParser @Inject constructor() {
         )
     }
 
-    fun parseClimateVariable(line: String): String {
+    internal fun parseClimateVariable(line: String): String {
         val climateVariable = line.trim()
         LOG.info("climaticVariable = $climateVariable")
         return climateVariable
     }
 
-    fun parseBbox(line: String): BBox {
+    internal fun parseBbox(line: String): BBox {
         val bbox = BBox(
                 minX = line.substring(6, 13).trim().toFloat(),
                 minY = line.substring(29, 36).trim().toFloat(),
@@ -47,7 +47,7 @@ class MetadataParser @Inject constructor() {
         return bbox
     }
 
-    fun parseSize(line: String): GridSize {
+    internal fun parseSize(line: String): GridSize {
         val size = GridSize(
                 width = line.substring(56, 60).trim().toInt(),
                 height = line.substring(61, 65).trim().toInt()
@@ -56,7 +56,7 @@ class MetadataParser @Inject constructor() {
         return size
     }
 
-    fun parsePeriod(line: String): Period {
+    internal fun parsePeriod(line: String): Period {
         val period = Period(
                 fromYear = line.substring(24, 28).trim().toInt(),
                 toYear = line.substring(29, 33).trim().toInt())

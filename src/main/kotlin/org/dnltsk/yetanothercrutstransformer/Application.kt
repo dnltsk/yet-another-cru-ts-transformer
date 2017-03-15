@@ -22,7 +22,7 @@ open class Application @Inject constructor(
         }
     }
 
-    fun run(vararg args: String?) {
+    internal fun run(vararg args: String?) {
         LOG.info("----------------------------------")
         LOG.info("  Yet Another CRU TS Transformer ")
         LOG.info("----------------------------------")

@@ -36,7 +36,7 @@ class GridParser {
         return allGridPoints
     }
 
-    fun parseGridBox(gridBoxLines: List<String>, years: List<Int>): List<GridPoint> {
+    internal fun parseGridBox(gridBoxLines: List<String>, years: List<Int>): List<GridPoint> {
         val gridPointsOfGridBox = mutableListOf<GridPoint>()
         val gridRef = parseGridRef(gridBoxLines.first())
         gridBoxLines.forEachIndexed { index, yearLine ->
@@ -54,7 +54,7 @@ class GridParser {
         return gridPointsOfGridBox
     }
 
-    fun parseYearLine(yearLine: String, year: Int, gridRef: GridRef): List<GridPoint> {
+    internal fun parseYearLine(yearLine: String, year: Int, gridRef: GridRef): List<GridPoint> {
         try {
             val gridPointsOfYear = mutableListOf<GridPoint>()
             val fiveCharLongPattern = ".{5}"
@@ -78,6 +78,13 @@ class GridParser {
         }
     }
 
+    internal fun parseGridRef(line: String): GridRef {
+        return GridRef(
+                col = line.substring(9, 13).trim().toInt(),
+                row = line.substring(14, 18).trim().toInt()
+        )
+    }
+
     private fun computeInstant(index: Int, year: Int): Instant {
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         calendar.clear()
@@ -85,12 +92,5 @@ class GridParser {
         calendar.set(Calendar.MONTH, index)
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         return calendar.toInstant()
-    }
-
-    fun parseGridRef(line: String): GridRef {
-        return GridRef(
-                col = line.substring(9, 13).trim().toInt(),
-                row = line.substring(14, 18).trim().toInt()
-        )
     }
 }
