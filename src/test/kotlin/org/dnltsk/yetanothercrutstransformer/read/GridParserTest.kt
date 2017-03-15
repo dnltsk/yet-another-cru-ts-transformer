@@ -28,7 +28,7 @@ class GridParserTest {
 
     @Test
     fun year_line_is_parsed_correctly() {
-        val pointOfYear = parser.parseYear(
+        val pointOfYear = parser.parseYearLine(
                 yearLine = " 2660 1003 1226 1689  775  598    5  181    8  321  261 1240",
                 year = 2017,
                 gridRef = GridRef(col = 116, row = 263))
