@@ -37,7 +37,7 @@ class PointRepository {
 
     fun insertPoints(conn: Connection, points: List<Point>, metadataId: Int) {
         val start = System.currentTimeMillis()
-        val batchSize = 1
+        val batchSize = 500
         val numBatches = points.size / batchSize
         val tenPercentSteps = calcTenPercentSteps(numBatches)
         points.asSequence().batch(batchSize).forEachIndexed { batchIndex, batchPoints ->
