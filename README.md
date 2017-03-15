@@ -17,9 +17,9 @@ Command Line Interface (CLI) to loads a Climatic Research Unit Timeseries (CRU T
 The command above creates a SQLite DB in file `cru-ts.sqlite`
 
 ## verify
-* check metadata:<br>
+* verify metadata:<br>
 `sqlite3 -header -column cru-ts.sqlite 'SELECT * FROM METADATA_TABLE'`
-* check points:<br>
+* verify points:<br>
 `sqlite3 -header -column cru-ts.sqlite 'SELECT * FROM GRID_TABLE LIMIT 10'`
   
 
