@@ -32,7 +32,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun metadata_and_points_are_passed_correctly() {
+    fun metadata_and_grid_are_passed_correctly() {
         application.run(GoldenTestData.sampleCruTsPrePath())
         verify(parser).parse(any())
         verify(dbService).persist(eq(SAMPLE_CRU_TS))

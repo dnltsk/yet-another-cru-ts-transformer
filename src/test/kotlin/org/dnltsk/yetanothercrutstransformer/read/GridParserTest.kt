@@ -2,9 +2,9 @@ package org.dnltsk.yetanothercrutstransformer.read
 
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.dnltsk.yetanothercrutstransformer.GoldenTestData
+import org.dnltsk.yetanothercrutstransformer.model.GridPoint
 import org.dnltsk.yetanothercrutstransformer.model.GridRef
 import org.dnltsk.yetanothercrutstransformer.model.Period
-import org.dnltsk.yetanothercrutstransformer.model.Point
 import org.junit.Test
 import java.time.Instant
 
@@ -28,28 +28,28 @@ class GridParserTest {
 
     @Test
     fun year_line_is_parsed_correctly() {
-        val pointOfYear = parser.parseYearLine(
+        val gridPointsOfYear = parser.parseYearLine(
                 yearLine = " 2660 1003 1226 1689  775  598    5  181    8  321  261 1240",
                 year = 2017,
                 gridRef = GridRef(col = 116, row = 263))
-        val expectedJanuaryPoint = Point(
+        val expectedJanuaryGridPoint = GridPoint(
                 date = Instant.parse("2017-01-01T00:00:00Z"),
                 gridRef = GridRef(col = 116, row = 263),
                 value = 2660
         )
-        val expectedJulyPoint = Point(
+        val expectedJulyGridPoint = GridPoint(
                 date = Instant.parse("2017-07-01T00:00:00Z"),
                 gridRef = GridRef(col = 116, row = 263),
                 value = 5
         )
-        val expectedDecemberPoint = Point(
+        val expectedDecemberGridPoint = GridPoint(
                 date = Instant.parse("2017-12-01T00:00:00Z"),
                 gridRef = GridRef(col = 116, row = 263),
                 value = 1240
         )
-        assertThat(pointOfYear.first()).isEqualTo(expectedJanuaryPoint)
-        assertThat(pointOfYear.get(6)).isEqualTo(expectedJulyPoint)
-        assertThat(pointOfYear.last()).isEqualTo(expectedDecemberPoint)
+        assertThat(gridPointsOfYear.first()).isEqualTo(expectedJanuaryGridPoint)
+        assertThat(gridPointsOfYear.get(6)).isEqualTo(expectedJulyGridPoint)
+        assertThat(gridPointsOfYear.last()).isEqualTo(expectedDecemberGridPoint)
     }
 
     @Test
@@ -60,29 +60,29 @@ class GridParserTest {
                 "  498  361  392  691   98  558  271   68  253  691  684 1524",
                 " 1321  442  995 1016  760  508  307  527    3  449  332 1028"
         )
-        val pointsOfGridBox = parser.parseGridBox(
+        val gridPointsOfGridBox = parser.parseGridBox(
                 gridBoxLines = gridBoxLines,
                 years = listOf(2000, 1985, 2017)
         )
-        val expectedFirstPoint = Point(
+        val expectedFirstGridPoint = GridPoint(
                 date = Instant.parse("2000-01-01T00:00:00Z"),
                 gridRef = GridRef(col = 116, row = 266),
                 value = 405
         )
-        val expectedMiddlePoint = Point(
+        val expectedMiddleGridPoint = GridPoint(
                 date = Instant.parse("1985-06-01T00:00:00Z"),
                 gridRef = GridRef(col = 116, row = 266),
                 value = 558
         )
-        val expectedLastPoint = Point(
+        val expectedLastGridPoint = GridPoint(
                 date = Instant.parse("2017-12-01T00:00:00Z"),
                 gridRef = GridRef(col = 116, row = 266),
                 value = 1028
         )
-        assertThat(pointsOfGridBox.size).isEqualTo(3 * 12)
-        assertThat(pointsOfGridBox.first()).isEqualTo(expectedFirstPoint)
-        assertThat(pointsOfGridBox.get(17)).isEqualTo(expectedMiddlePoint)
-        assertThat(pointsOfGridBox.last()).isEqualTo(expectedLastPoint)
+        assertThat(gridPointsOfGridBox.size).isEqualTo(3 * 12)
+        assertThat(gridPointsOfGridBox.first()).isEqualTo(expectedFirstGridPoint)
+        assertThat(gridPointsOfGridBox.get(17)).isEqualTo(expectedMiddleGridPoint)
+        assertThat(gridPointsOfGridBox.last()).isEqualTo(expectedLastGridPoint)
     }
 
     @Test
@@ -91,35 +91,35 @@ class GridParserTest {
                 "Grid-ref= 116, 266",
                 "123451234512345123451234512345123451234512345123451234512345"
         )
-        val pointsOfGridBox = parser.parseGridBox(
+        val gridPointsOfGridBox = parser.parseGridBox(
                 gridBoxLines = gridBoxLines,
                 years = listOf(2017)
         )
 
         val expectedValueOfAllGridPoints = 12345
-        assertThat(pointsOfGridBox.size).isEqualTo(12)
-        pointsOfGridBox.forEach { gridPoint ->
+        assertThat(gridPointsOfGridBox.size).isEqualTo(12)
+        gridPointsOfGridBox.forEach { gridPoint ->
             assertThat(gridPoint.value).isEqualTo(expectedValueOfAllGridPoints)
         }
     }
 
     @Test
     fun sampleFile_is_parsed_correctly() {
-        val allPoints = parser.parse(
+        val allGridPoints = parser.parse(
                 lines = GoldenTestData.sampleCruTsPreLines(),
                 period = Period(fromYear = 1991, toYear = 2000)
         )
-        val expectedFirstPoint = Point(
+        val expectedFirstGridPoint = GridPoint(
                 date = Instant.parse("1991-01-01T00:00:00Z"),
                 gridRef = GridRef(col = 1, row = 148),
                 value = 3020
         )
-        val expectedLastPoint = Point(
+        val expectedLastGridPoint = GridPoint(
                 date = Instant.parse("2000-12-01T00:00:00Z"),
                 gridRef = GridRef(col = 142, row = 268),
                 value = 272
         )
-        assertThat(allPoints.first()).isEqualTo(expectedFirstPoint)
-        assertThat(allPoints.last()).isEqualTo(expectedLastPoint)
+        assertThat(allGridPoints.first()).isEqualTo(expectedFirstGridPoint)
+        assertThat(allGridPoints.last()).isEqualTo(expectedLastGridPoint)
     }
 }

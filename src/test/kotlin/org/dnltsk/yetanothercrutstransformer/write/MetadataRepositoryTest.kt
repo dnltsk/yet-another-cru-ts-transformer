@@ -11,7 +11,7 @@ class MetadataRepositoryTest : MemoryDbBase() {
     @Test
     fun metadata_is_written_correctly() {
         val originalMetadata = MockedModels.SAMPLE_METADATA
-        metadataRepository.createMetadataTable(memoryConn)
+        metadataRepository.createMetadataTableIfNotExists(memoryConn)
         val newMetadataId = metadataRepository.insertMetadata(memoryConn, originalMetadata)
 
         val selectedMetadata = metadataRepository.selectMetadata(

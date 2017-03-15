@@ -30,7 +30,7 @@ class ParserTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         `when`(metadataParser.parse(any<List<String>>())).thenReturn(MockedModels.SAMPLE_METADATA)
-        `when`(gridParser.parse(any<List<String>>(), any<Period>())).thenReturn(MockedModels.EMPTY_POINTS)
+        `when`(gridParser.parse(any<List<String>>(), any<Period>())).thenReturn(MockedModels.EMPTY_GRID)
     }
 
     @Test
@@ -50,7 +50,7 @@ class ParserTest {
     }
 
     @Test
-    fun read_uses_metadata_and_point_readers_once() {
+    fun read_uses_metadata_and_grid_readers_once() {
         parser.parse(GoldenTestData.sampleCruTsPrePath())
         verify(metadataParser, times(1)).parse(any())
         verify(gridParser, times(1)).parse(any(), any())

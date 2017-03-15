@@ -18,7 +18,7 @@ class DbServiceTest {
     lateinit var metadataRepository: MetadataRepository
 
     @Mock
-    lateinit var pointRepository: PointRepository
+    lateinit var gridRepository: GridRepository
 
     @InjectMocks
     lateinit var dbService: DbService
@@ -30,9 +30,9 @@ class DbServiceTest {
     }
 
     @Test
-    fun metadata_and_points_are_passed_correctly() {
+    fun metadata_and_grid_are_passed_correctly() {
         dbService.persist(SAMPLE_CRU_TS)
         verify(metadataRepository).insertMetadata(any(), eq(SAMPLE_CRU_TS.metadata))
-        verify(pointRepository).insertPoints(any(), eq(SAMPLE_CRU_TS.points), eq(666))
+        verify(gridRepository).insertGridPoints(any(), eq(SAMPLE_CRU_TS.grid), eq(666))
     }
 }

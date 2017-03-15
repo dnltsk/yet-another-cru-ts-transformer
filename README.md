@@ -20,7 +20,7 @@ The command above creates a SQLite DB in file `cru-ts.sqlite`
 * check metadata:<br>
 `sqlite3 -header -column cru-ts.sqlite 'SELECT * FROM METADATA_TABLE'`
 * check points:<br>
-`sqlite3 -header -column cru-ts.sqlite 'SELECT * FROM POINT_TABLE LIMIT 10'`
+`sqlite3 -header -column cru-ts.sqlite 'SELECT * FROM GRID_TABLE LIMIT 10'`
   
 
 ## references

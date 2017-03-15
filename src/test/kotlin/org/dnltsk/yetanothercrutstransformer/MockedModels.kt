@@ -15,12 +15,12 @@ class MockedModels {
                 missing = -999
         )
 
-        val EMPTY_POINTS = mutableListOf<Point>()
+        val EMPTY_GRID = mutableListOf<GridPoint>()
 
         val SAMPLE_CRU_TS = CruTs(
                 sourceFile = "foo.txt",
                 metadata = SAMPLE_METADATA,
-                points = EMPTY_POINTS
+                grid = EMPTY_GRID
         )
 
     }

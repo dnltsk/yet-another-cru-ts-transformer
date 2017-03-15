@@ -16,11 +16,11 @@ class Parser @Inject constructor(
         val file = openFile(filename)
         val lines = file.readText().lines()
         val metadata = metadataParser.parse(lines)
-        val points = gridParser.parse(lines, metadata.period)
+        val gridPoints = gridParser.parse(lines, metadata.period)
         return CruTs(
                 sourceFile = file.absoluteFile.absolutePath,
                 metadata = metadata,
-                points = points)
+                grid = gridPoints)
     }
 
     private fun openFile(filename: String?): File {

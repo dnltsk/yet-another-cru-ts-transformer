@@ -18,7 +18,7 @@ class MetadataRepository {
 
     private val LOG = LoggerFactory.getLogger(this::class.java)
 
-    fun createMetadataTable(conn: Connection) {
+    fun createMetadataTableIfNotExists(conn: Connection) {
         val sql = StringBuilder()
         sql.append("CREATE TABLE IF NOT EXISTS ${METADATA_TABLE_NAME} ( ")
         sql.append("    id INTEGER PRIMARY KEY, ")

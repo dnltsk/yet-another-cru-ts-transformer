@@ -1,9 +1,9 @@
 package org.dnltsk.yetanothercrutstransformer.read
 
 import com.google.inject.Singleton
+import org.dnltsk.yetanothercrutstransformer.model.GridPoint
 import org.dnltsk.yetanothercrutstransformer.model.GridRef
 import org.dnltsk.yetanothercrutstransformer.model.Period
-import org.dnltsk.yetanothercrutstransformer.model.Point
 import org.dnltsk.yetanothercrutstransformer.util.batch
 import org.slf4j.LoggerFactory
 import java.time.Instant
@@ -18,8 +18,8 @@ class GridParser {
 
     private val FIRST_GRID_BOX_AT_LINE_INDEX = 5
 
-    fun parse(lines: List<String>, period: Period): List<Point> {
-        val allPoints = mutableListOf<Point>()
+    fun parse(lines: List<String>, period: Period): List<GridPoint> {
+        val allGridPoints = mutableListOf<GridPoint>()
         val dataLines = lines.subList(FIRST_GRID_BOX_AT_LINE_INDEX, lines.size)
         val years = (period.fromYear..period.toYear).toList()
         val numLinesPerGridBox = years.size + 1
@@ -27,36 +27,36 @@ class GridParser {
         dataLines.asSequence()
                 .batch(numLinesPerGridBox)
                 .forEach { gridBoxLines ->
-                    val pointOfGribBox = parseGridBox(
+                    val gridPointsOfGribBox = parseGridBox(
                             gridBoxLines = gridBoxLines,
                             years = years
                     )
-                    allPoints.addAll(pointOfGribBox)
+                    allGridPoints.addAll(gridPointsOfGribBox)
                 }
-        return allPoints
+        return allGridPoints
     }
 
-    fun parseGridBox(gridBoxLines: List<String>, years: List<Int>): List<Point> {
-        val pointsOfGridBox = mutableListOf<Point>()
+    fun parseGridBox(gridBoxLines: List<String>, years: List<Int>): List<GridPoint> {
+        val gridPointsOfGridBox = mutableListOf<GridPoint>()
         val gridRef = parseGridRef(gridBoxLines.first())
         gridBoxLines.forEachIndexed { index, yearLine ->
             if (index == 0) {
                 return@forEachIndexed
             }
             val year = years.get(index - 1)
-            val pointsOfYear = parseYearLine(
+            val gridPointsOfYear = parseYearLine(
                     yearLine = yearLine,
                     year = year,
                     gridRef = gridRef)
-            pointsOfGridBox.addAll(pointsOfYear)
+            gridPointsOfGridBox.addAll(gridPointsOfYear)
         }
 
-        return pointsOfGridBox
+        return gridPointsOfGridBox
     }
 
-    fun parseYearLine(yearLine: String, year: Int, gridRef: GridRef): List<Point> {
+    fun parseYearLine(yearLine: String, year: Int, gridRef: GridRef): List<GridPoint> {
         try {
-            val pointsOfYear = mutableListOf<Point>()
+            val gridPointsOfYear = mutableListOf<GridPoint>()
             val fiveCharLongPattern = ".{5}"
             val p = Pattern.compile(fiveCharLongPattern)
             val m = p.matcher(yearLine)
@@ -64,14 +64,14 @@ class GridParser {
             while (m.find()) {
                 val value = m.group().trim().toInt()
                 val date = computeInstant(monthIndex, year)
-                pointsOfYear.add(Point(
+                gridPointsOfYear.add(GridPoint(
                         date = date,
                         gridRef = gridRef,
                         value = value
                 ))
                 monthIndex++
             }
-            return pointsOfYear
+            return gridPointsOfYear
         }catch(e: Throwable){
             LOG.error("cannot parse line with yearly data: $yearLine")
             throw e
