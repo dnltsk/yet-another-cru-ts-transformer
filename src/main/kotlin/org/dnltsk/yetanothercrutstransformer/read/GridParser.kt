@@ -7,6 +7,7 @@ import org.dnltsk.yetanothercrutstransformer.model.Point
 import org.dnltsk.yetanothercrutstransformer.util.batch
 import java.time.Instant
 import java.util.*
+import java.util.regex.Pattern
 
 
 @Singleton
@@ -52,14 +53,19 @@ class GridParser {
 
     fun parseYear(yearLine: String, year: Int, gridRef: GridRef): List<Point> {
         val pointsOfYear = mutableListOf<Point>()
-        val splitLine = yearLine.trim().split(Regex("[ ]+"))
-        splitLine.forEachIndexed { index, value ->
-            val date = computeInstant(index, year)
+        val fiveCharLongPattern = ".{5}"
+        val p = Pattern.compile(fiveCharLongPattern)
+        val m = p.matcher(yearLine)
+        var monthIndex = 0
+        while (m.find()) {
+            val value = m.group().trim().toInt()
+            val date = computeInstant(monthIndex, year)
             pointsOfYear.add(Point(
                     date = date,
                     gridRef = gridRef,
-                    value = value.toInt()
+                    value = value
             ))
+            monthIndex++
         }
         return pointsOfYear
     }

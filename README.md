@@ -25,5 +25,5 @@ The command above creates a SQLite DB in file `cru-ts.sqlite`
 
 ## references
 
-* CRU TS 2.1 Standard<br>
-https://crudata.uea.ac.uk/~timm/grid/CRU_TS_2_1.html
+* CRU TS 2.1 Format Description<br>
+https://crudata.uea.ac.uk/~timm/grid/fileformat.html
